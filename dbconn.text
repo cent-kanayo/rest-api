@@ -9,6 +9,7 @@ $PASSWORD = your_password
 $DB = database_name
 $conn = mysqli_connect($HOST, $USER, $PASSWORD, $DB);
 
+
 if(!$conn){
     
      die('Failed to connect to database' . mysqli_connect_error());
@@ -24,6 +25,6 @@ $policy_data = " INSERT INTO policies (privileges) VALUES ('can-update-blog'),('
 
 $categories_table = "CREATE TABLE policies (id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, category VARCHAR(255) NOT NULL)";
 $policy_data = " INSERT INTO policies (category) VALUES ('Frontend Development'),('Backend Development'), ('Fullstack Development'), ('UI/UX'), ("Data Analytic"), ("Cyber Security")";
-
+$mysql
 define('ROOT_PATH', realpath(dirname(__FILE__)));
 define('BASE_URL', 'http://localhost:8080');
