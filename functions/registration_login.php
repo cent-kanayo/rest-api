@@ -44,10 +44,34 @@ function registerUser (){
                 $getUser = mysqli_prepare($conn, $sql); 
                 mysqli_stmt_bind_param($getUser, "i", $user_id);
                 mysqli_stmt_execute($getUser);
+                $get_admin_user = mysqli_stmt_get_result($getUser);
+                $admin_user = mysqli_fetch_assoc($get_admin_user);
+                $policy_sql = "SELECT `id` FROM policies";
+                $policy_query = mysqli_query($conn, $policy_sql);
+                $policies = mysqli_fetch_all($policy_query, MYSQLI_ASSOC);
+                if(!$policy_query){
+                $message = "Something went wrong try again";
+                $response = array("status" => "Fail", "message" => $message);
+                return $response;
+                }
+                $admin_policies = [];
+                for($i = 0; $i < count($policies); $i++){
+                    array_push($admin_policies, $policies[$i]["id"]);
+                }
+                $admin_policies = json_encode($admin_policies);
+                $role_sql = "INSERT INTO `roles` (`name`, `user_id`, `policies`) VALUES(?,?,?)";
+                $role_query = mysqli_prepare($conn, $role_sql);
+                mysqli_stmt_bind_param($role_query, "sis", $admin_user["role"], $admin_user["id"], $admin_policies);
+                mysqli_stmt_execute($role_query);
+                if(!$role_query){
+                $message = "Something went wrong try again";
+                $response = array("status" => "Fail", "message" => $message);
+                return $response;
+                }
                 http_response_code(201);
-                $message = "User Super admin user created";
-                $response = array("status" => "Fail", "message" => $message, "data" => $result);
-                return json_encode($response);
+                $message = "Super-admin user created";
+                $response = array("status" => "Success", "message" => $message, "data" => $admin_user);
+                return $response;
             }else{
                 $message = "Something went wrong try again";
                 $response = array("status" => "Fail", "message" => $message);
@@ -145,7 +169,6 @@ function loginUser () {
         mysqli_stmt_execute($result);
         $stmt_result = mysqli_stmt_get_result($result);
         $user = mysqli_fetch_assoc($stmt_result);
-        
         if(mysqli_num_rows($stmt_result) == 1){
             if($user["password"] != md5($password)){
                 $message = "Invalid Credentials";

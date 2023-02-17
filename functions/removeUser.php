@@ -1,6 +1,6 @@
 <?php include("../config.php") ?>
 <?php
-function getUsers(){
+function removeUser(){
     global $conn;
     if($_SERVER["REQUEST_METHOD"] == "DELETE"){
         if(!isset($_SERVER["HTTP_AUTHORIZATION"])){

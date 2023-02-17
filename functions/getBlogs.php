@@ -31,13 +31,12 @@ function getSingleBlog() {
     $id = explode(" ", $get_id);
     $id = $id[1];
     $sql = "SELECT * FROM  roles WHERE id=? LIMIT 1";
-        $query = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($query, 'i', $id);
-        mysqli_stmt_execute($query);
-        $stmt_result = mysqli_stmt_get_result($query);
+    $query = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($query, 'i', $id);
+    mysqli_stmt_execute($query);
+    $stmt_result = mysqli_stmt_get_result($query);
     $role = mysqli_fetch_assoc($stmt_result);
     if($role["name"] == "Super-admin" || $role["name"] == "Editor-admin"){
-
         $sql = "SELECT * FROM blogs WHERE id=?";
         $query = mysqli_prepare($conn, $sql);
         mysqli_stmt_bind_param($query, 'i', $query_id);
