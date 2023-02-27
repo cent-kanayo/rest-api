@@ -23,7 +23,7 @@ function createBlog() {
     $data = file_get_contents("php://input");
     $data = json_decode($data);
     $title = $data->title;
-    $content = $data->content;
+    $content = htmlentities($data->content);
     $category = $data->category_id;
     if(!$title || !$content || !$category){
         http_response_code(400);

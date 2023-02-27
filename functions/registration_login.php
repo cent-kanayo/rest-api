@@ -1,5 +1,9 @@
 <?php include("../config.php") ?>
 <?php 
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: *");
+header("Access-Control-Allow-Headers: *");
+header("Content-type: application/json");
 function registerUser (){
     global $conn;
 
@@ -80,7 +84,7 @@ function registerUser (){
         }else{
             $data = file_get_contents("php://input");
             $data = json_decode($data);
-             $password = $data->password;
+            $password = $data->password;
             $cpassword = $data->cpassword;
             $email = $data->email;
             $lname = $data->lname;
@@ -171,6 +175,7 @@ function loginUser () {
         $user = mysqli_fetch_assoc($stmt_result);
         if(mysqli_num_rows($stmt_result) == 1){
             if($user["password"] != md5($password)){
+                http_response_code(400);
                 $message = "Invalid Credentials";
                 $response = array("status" => "Fail", "message" => $message);
                 return $response;
