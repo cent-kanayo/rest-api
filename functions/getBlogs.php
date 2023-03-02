@@ -52,6 +52,7 @@ function getSingleBlog() {
         $result = mysqli_fetch_assoc($stmt_result);
         if(!$query){
             $message =  "Something went wrong";
+            http_response_code(500);
             $response = array("status" => "Fail", "message" => $message);
             return $response;
         }
@@ -62,7 +63,9 @@ function getSingleBlog() {
         }
             $user = getAuthor($result["author"]);
             $result["username"] = $user["fname"] . " " . $user["lname"];
-            $response = array("status" => "Success", "message" => $result);
+            $comments = getBlogsComments($query_id);
+            http_response_code(200);
+            $response = array("status" => "Success", "blog" => $result, "comments" => $comments);
             return $response;
 
 
@@ -87,13 +90,14 @@ function getSingleBlog() {
             return $response;
         }
             
-                $user = getAuthor($result["author"]);
-                $result["username"] = $user["fname"] . " " . $user["lname"];
-                
-
-            $response = array("status" => "Success", "data" => $result);
+            $user = getAuthor($result["author"]);
+            $result["username"] = $user["fname"] . " " . $user["lname"];
+            $comments = getBlogsComments($query_id);
+            http_response_code(200);
+            $response = array("status" => "Success", "blog" => $result, "comments" => $comments);
             return $response;
-    }
+    }       
+            http_response_code(404);
             $message = "Couldn't find the resource you are looking for";
             $response = array("status" => "Fail", "message" => $message);
             return $response;
@@ -109,3 +113,34 @@ function getAuthor($id){
         $result = mysqli_fetch_assoc($stmt_result);
         return $result;
 }
+
+function getBlogsComments ($id){
+        global $conn;
+        $sql = "SELECT `id`, `comment`, `author` FROM `comments` WHERE blog_id= ? ";
+        $query = mysqli_prepare($conn, $sql);
+        mysqli_stmt_bind_param($query, 'i', $id);
+        mysqli_stmt_execute($query);
+        $stmt_result = mysqli_stmt_get_result($query);
+        $result = mysqli_fetch_all($stmt_result);
+        if(!$query){
+            http_response_code(500);
+            $message =   "Something went wrong";
+            $response = array("status" => "Fail", "message" => $message);
+            return $response;
+        }
+        if(count($result) < 1){
+            http_response_code(200);
+            $message = "No comments found for this blog yet";
+            $response = array("status" => "Fail", "message" => $message);
+            return $response;  
+        }
+        $comments = [];
+
+        foreach($result as $comment){
+            $comment_author = getAuthor($comment["author"]);
+            $comment["username"] = $comment_author["fname"] . " " . $comment_author["lname"];
+            array_push($comments, $comment);
+        }
+
+        return $comments;
+    }
