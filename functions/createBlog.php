@@ -66,3 +66,5 @@ function esc(String $value)
         return $val;
 
     }
+
+    
